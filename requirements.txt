@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+python-multipart
+numpy
+faiss-cpu
+google-generativeai
+pyTelegramBotAPI
+pydantic<2.0.0

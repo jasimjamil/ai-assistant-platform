@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login/Signup Container will be shown first -->
+        <div id="auth-container" class="visible">
+            <div class="auth-box">
+                <div class="tabs">
+                    <div class="tab active" data-tab="login">Login</div>
+                    <div class="tab" data-tab="signup">Sign Up</div>
+                </div>
+                
+                <div id="login-form" class="form-container visible">
+                    <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+                    <p class="form-subtitle">Sign in to continue to your AI Assistant</p>
+                    
+                    <div class="input-group">
+                        <label for="login-username"><i class="fas fa-user"></i> Username</label>
+                        <input type="text" id="login-username" placeholder="Enter your username">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="login-password"><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password">
+                        <i class="fas fa-eye-slash toggle-password"></i>
+                    </div>
+                    
+                    <div class="remember-forgot">
+                        <div>
+                            <input type="checkbox" id="remember-me">
+                            <label for="remember-me">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+                    
+                    <button id="login-button" class="primary-button">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    
+                    <div class="social-login">
+                        <p>Or sign in with</p>
+                        <div class="social-icons">
+                            <button class="social-btn google"><i class="fab fa-google"></i></button>
+                            <button class="social-btn facebook"><i class="fab fa-facebook-f"></i></button>
+                            <button class="social-btn twitter"><i class="fab fa-twitter"></i></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="signup-form" class="form-container">
+                    <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+                    <p class="form-subtitle">Get started with your AI Assistant</p>
+                    
+                    <div class="input-group">
+                        <label for="signup-username"><i class="fas fa-user"></i> Username</label>
+                        <input type="text" id="signup-username" placeholder="Choose a username">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="signup-email"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="signup-email" placeholder="Enter your email">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="signup-password"><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="signup-password" placeholder="Create a password">
+                        <i class="fas fa-eye-slash toggle-password"></i>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="signup-confirm"><i class="fas fa-lock"></i> Confirm Password</label>
+                        <input type="password" id="signup-confirm" placeholder="Confirm your password">
+                    </div>
+                    
+                    <div class="terms">
+                        <input type="checkbox" id="agree-terms">
+                        <label for="agree-terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                    </div>
+                    
+                    <button id="signup-button" class="primary-button">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Application (will be shown after login) -->
+        <div id="main-app" class="hidden">
+            <!-- Your existing app content -->
+            <div class="telegram-settings-section">
+                <h2><i class="fab fa-telegram"></i> Telegram Integration</h2>
+                <div class="status-indicator">
+                    <div id="telegram-status-light" class="status-light disconnected"></div>
+                    <span id="telegram-status-text">Checking connection...</span>
+                </div>
+                
+                <div class="telegram-instructions">
+                    <h3>Connect to Telegram</h3>
+                    <p>Use our AI assistant directly in Telegram by following these steps:</p>
+                    <ol>
+                        <li>Open Telegram and search for <span id="bot-username">@YourAIAssistantBot</span></li>
+                        <li>Start a conversation with the bot by clicking "Start"</li>
+                        <li>Send a message to begin chatting with the AI</li>
+                    </ol>
+                    
+                    <div class="qr-section">
+                        <p>Or scan this QR code:</p>
+                        <div id="telegram-qr-code"></div>
+                    </div>
+                </div>
+                
+                <div class="troubleshooting">
+                    <h3>Troubleshooting</h3>
+                    <p>If you're having trouble connecting to Telegram:</p>
+                    <ul>
+                        <li>Check your internet connection</li>
+                        <li>Make sure the bot is active by visiting <a id="bot-link" href="#" target="_blank">the bot on Telegram</a></li>
+                        <li>Try restarting the application</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+    <script>
+        // Authentication UI Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            const tabs = document.querySelectorAll('.tab');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const tabName = this.getAttribute('data-tab');
+                    if (tabName === 'login') {
+                        loginForm.classList.add('visible');
+                        signupForm.classList.remove('visible');
+                    } else {
+                        signupForm.classList.add('visible');
+                        loginForm.classList.remove('visible');
+                    }
+                });
+            });
+            
+            // Toggle password visibility
+            const toggles = document.querySelectorAll('.toggle-password');
+            toggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const input = this.previousElementSibling;
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        this.classList.remove('fa-eye-slash');
+                        this.classList.add('fa-eye');
+                    } else {
+                        input.type = 'password';
+                        this.classList.remove('fa-eye');
+                        this.classList.add('fa-eye-slash');
+                    }
+                });
+            });
+            
+            // Login functionality
+            document.getElementById('login-button').addEventListener('click', async function() {
+                const username = document.getElementById('login-username').value;
+                const password = document.getElementById('login-password').value;
+                
+                if (!username || !password) {
+                    alert('Please enter both username and password');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        // Store token and show main app
+                        localStorage.setItem('auth_token', data.token);
+                        localStorage.setItem('username', data.username);
+                        
+                        document.getElementById('auth-container').classList.remove('visible');
+                        document.getElementById('auth-container').classList.add('hidden');
+                        document.getElementById('main-app').classList.remove('hidden');
+                        document.getElementById('main-app').classList.add('visible');
+                        
+                        // Initialize main app if needed
+                        if (typeof initApp === 'function') {
+                            initApp();
+                        }
+                        
+                        // Check Telegram status after login
+                        checkTelegramStatus();
+                    } else {
+                        alert(data.error || 'Login failed');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('Login failed. Please try again.');
+                }
+            });
+            
+            // Signup functionality
+            document.getElementById('signup-button').addEventListener('click', async function() {
+                const username = document.getElementById('signup-username').value;
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const confirm = document.getElementById('signup-confirm').value;
+                const agreeTerms = document.getElementById('agree-terms').checked;
+                
+                if (!username || !email || !password) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+                
+                if (password !== confirm) {
+                    alert('Passwords do not match');
+                    return;
+                }
+                
+                if (!agreeTerms) {
+                    alert('You must agree to the Terms of Service and Privacy Policy');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/auth/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, email, password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        // Store token and show main app
+                        localStorage.setItem('auth_token', data.token);
+                        localStorage.setItem('username', data.username);
+                        
+                        document.getElementById('auth-container').classList.remove('visible');
+                        document.getElementById('auth-container').classList.add('hidden');
+                        document.getElementById('main-app').classList.remove('hidden');
+                        document.getElementById('main-app').classList.add('visible');
+                        
+                        // Initialize main app if needed
+                        if (typeof initApp === 'function') {
+                            initApp();
+                        }
+                        
+                        // Check Telegram status after signup
+                        checkTelegramStatus();
+                    } else {
+                        alert(data.error || 'Signup failed');
+                    }
+                } catch (error) {
+                    console.error('Signup error:', error);
+                    alert('Signup failed. Please try again.');
+                }
+            });
+            
+            // Check if user is already logged in
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                // Show main app directly
+                document.getElementById('auth-container').classList.remove('visible');
+                document.getElementById('auth-container').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                document.getElementById('main-app').classList.add('visible');
+                
+                // Initialize main app if needed
+                if (typeof initApp === 'function') {
+                    initApp();
+                }
+                
+                // Check Telegram status after login
+                checkTelegramStatus();
+            }
+        });
+        
+        // Function to check Telegram bot status
+        async function checkTelegramStatus() {
+            try {
+                const statusLight = document.getElementById('telegram-status-light');
+                const statusText = document.getElementById('telegram-status-text');
+                const botUsername = document.getElementById('bot-username');
+                const botLink = document.getElementById('bot-link');
+                
+                // Update status to "connecting" while checking
+                statusLight.className = 'status-light connecting';
+                statusText.textContent = 'Connecting to Telegram...';
+                
+                const response = await fetch('/api/telegram/status');
+                const data = await response.json();
+                
+                if (data.connected) {
+                    // Telegram bot is connected
+                    statusLight.className = 'status-light connected';
+                    statusText.textContent = 'Connected to Telegram';
+                    
+                    // Update bot information
+                    if (data.bot_username) {
+                        botUsername.textContent = '@' + data.bot_username;
+                        botLink.href = 'https://t.me/' + data.bot_username;
+                    }
+                    
+                    // Generate QR code
+                    generateTelegramQR(data.bot_username);
+                } else {
+                    // Telegram bot is disconnected
+                    statusLight.className = 'status-light disconnected';
+                    statusText.textContent = data.error || 'Disconnected from Telegram';
+                }
+            } catch (error) {
+                console.error('Error checking Telegram status:', error);
+                document.getElementById('telegram-status-light').className = 'status-light disconnected';
+                document.getElementById('telegram-status-text').textContent = 'Error connecting to Telegram';
+            }
+        }
+        
+        // Function to generate QR code for Telegram bot
+        function generateTelegramQR(username) {
+            if (!username) return;
+            
+            const qrContainer = document.getElementById('telegram-qr-code');
+            qrContainer.innerHTML = '';
+            
+            // Using Google Charts API to generate QR code
+            const telegramUrl = 'https://t.me/' + username;
+            const qrImageUrl = 'https://chart.googleapis.com/chart?cht=qr&chl=' + 
+                encodeURIComponent(telegramUrl) + 
+                '&chs=200x200&choe=UTF-8&chld=L|0';
+            
+            const qrImage = document.createElement('img');
+            qrImage.src = qrImageUrl;
+            qrImage.alt = 'Telegram Bot QR Code';
+            qrImage.width = 180;
+            qrImage.height = 180;
+            
+            qrContainer.appendChild(qrImage);
+        }
+        
+        // Also check Telegram status when the login button is clicked
+        document.getElementById('login-button').addEventListener('click', function() {
+            // After the existing login code executes and is successful
+            setTimeout(() => {
+                if (document.getElementById('main-app').classList.contains('visible')) {
+                    checkTelegramStatus();
+                }
+            }, 1000); // Wait for the login process to complete
+        });
+        
+        // Also check Telegram status when the signup button is clicked
+        document.getElementById('signup-button').addEventListener('click', function() {
+            // After the existing signup code executes and is successful
+            setTimeout(() => {
+                if (document.getElementById('main-app').classList.contains('visible')) {
+                    checkTelegramStatus();
+                }
+            }, 1000); // Wait for the signup process to complete
+        });
+    </script>
+</body>
+</html> 
