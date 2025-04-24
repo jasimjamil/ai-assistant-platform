@@ -1,5 +1,7 @@
 // Global variables
-const API_URL = '/api';
+const API_URL = window.location.hostname === 'localhost' 
+    ? '/api'
+    : 'https://your-project-name.vercel.app/api';
 let authToken = localStorage.getItem('authToken');
 let currentUser = null;
 

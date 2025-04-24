@@ -28,6 +28,7 @@ from collections import defaultdict
 from dotenv import load_dotenv
 import logging
 import random
+from mangum import Mangum
 
 # Load environment variables from .env file
 load_dotenv()
@@ -988,8 +989,12 @@ logger = logging.getLogger(__name__)
 # Debug endpoint to check if API is responding
 @app.get("/api/status")
 async def status():
-    logger.info("Status endpoint called")
-    return {"status": "ok", "message": "API is running"}
+    return {
+        "status": "online",
+        "version": "1.0",
+        "google_api_configured": bool(GOOGLE_API_KEY),
+        "telegram_configured": bool(TELEGRAM_BOT_TOKEN)
+    }
 
 # Serve index.html at the root with logging
 @app.get("/")
@@ -1281,8 +1286,7 @@ async def telegram_status():
         return {"status": "not_initialized", "connected": False}
 
 # Add this handler function that Vercel will use
-def handler(request: Request):
-    return app.handle_request(request)
+handler = Mangum(app)
 
 if __name__ == "__main__":
     uvicorn.run("backend:app", host="0.0.0.0", port=8000, reload=True) 
