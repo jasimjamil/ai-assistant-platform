@@ -1,0 +1,20 @@
+# (Paste the content above and save with Ctrl+X, then Y)# 
+# Python cache files
+__pycache__/ *.py[cod] *$py.class
+# Initialize git (if not already initialized)
+git init
+
+# Add all files (except those in .gitignore) Database 
+# files
+git add .*.db *.sqlite3
+
+# Environment variables Commit the files.env
+git commit -m "Initial commit"
+# Virtual environment Set the default branch to mainvenv/
+git branch -M mainenv/
+
+# System files Add your GitHub repository.DS_Store
+git remote add origin 
+https://github.com/jasimjamil/ai-assistant-platform.git
+# Push to GitHub
+git push -u origin main
